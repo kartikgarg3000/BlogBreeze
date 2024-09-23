@@ -5,7 +5,7 @@ import { login } from '../store/authSlice';
 import { Button, Input, Logo } from './index.js';
 import { useDispatch } from 'react-redux';
 import { useForm } from 'react-hook-form';
-
+import conf from '../conf/conf.js';
 function Signup() {
     const navigate = useNavigate();
     const [error, setError] = useState("");
@@ -13,6 +13,8 @@ function Signup() {
     const { register, handleSubmit } = useForm();
 
     const create = async (data) => {
+        console.log('running')
+        console.log(conf)
         setError("");
         try {
             const userData = await authService.createAccount(data);
