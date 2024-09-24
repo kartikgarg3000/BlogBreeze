@@ -1,1 +1,0 @@
-BlogBreeze is a modern blogging platform that allows users to create, manage, and view blog posts seamlessly. It features a user-friendly interface and integrates various technologies to ensure a smooth experience for both authors and readers. The application is built using React for the frontend, Redux for state management, and Appwrite for backend services.
