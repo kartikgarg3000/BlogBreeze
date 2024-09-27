@@ -1,5 +1,5 @@
 import React, { useCallback } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import { Button, Input, RTE, Select } from "..";
 import appwriteService from "../../appwrite/config";
 import { useNavigate } from "react-router-dom";
@@ -18,7 +18,9 @@ export default function PostForm({ post }) {
     const navigate = useNavigate();
     const userData = useSelector((state) => state.auth.userData);
 
+    // Check if the submit function is triggered
     const submit = async (data) => {
+        console.log("Form submitted with data:", data); // Confirm submission is triggered
         if (post) {
             const file = data.image[0] ? await appwriteService.uploadFile(data.image[0]) : null;
 
@@ -61,8 +63,9 @@ export default function PostForm({ post }) {
     }, []);
 
     React.useEffect(() => {
-        const subscription = watch((value, { name }) => {
-            if (name === "title") {
+        const subscription = watch((value) => {
+            console.log("Current form values:", value); // Log current values
+            if (value.title) {
                 setValue("slug", slugTransform(value.title), { shouldValidate: true });
             }
         });
@@ -88,7 +91,18 @@ export default function PostForm({ post }) {
                         setValue("slug", slugTransform(e.currentTarget.value), { shouldValidate: true });
                     }}
                 />
-                <RTE label="Content :" name="content" control={control} defaultValue={getValues("content")} />
+                {/* Use Controller for RTE */}
+                <Controller
+                    name="content"
+                    control={control}
+                    defaultValue={getValues("content")}
+                    render={({ field }) => (
+                        <RTE
+                            {...field}
+                            label="Content :"
+                        />
+                    )}
+                />
             </div>
             <div className="w-1/3 px-2">
                 <Input

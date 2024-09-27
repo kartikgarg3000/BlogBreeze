@@ -40,3 +40,20 @@
 .read-the-docs {
   color: #888;
 }
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center; /* Align items vertically */
+  padding: 1rem;
+  background-color: #f8f9fa; /* Change this to your desired header color */
+}
+
+nav ul {
+  list-style: none;
+  padding: 0;
+}
+
+nav li {
+  margin-left: 20px; /* Space between nav items */
+}
+

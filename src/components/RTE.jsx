@@ -1,55 +1,30 @@
-import React from 'react'
-import {Editor } from '@tinymce/tinymce-react';
-import {Controller } from 'react-hook-form';
+import React, { useRef } from 'react';
+import { Editor } from '@tinymce/tinymce-react';
 
+const PostForm = () => {
+  const editorRef = useRef(null);
 
-export default function RTE({name, control, label, defaultValue =""}) {
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    const content = editorRef.current.getContent();
+    console.log(content); // Output content to console
+    // Add your submission logic here (e.g., send to server)
+  };
+
   return (
-    <div className='w-full'> 
-    {label && <label className='inline-block mb-1 pl-1'>{label}</label>}
-
-    <Controller
-    name={name || "content"}
-    control={control}
-    render={({field: {onChange}}) => (
-        <Editor
-        initialValue={defaultValue}
+    <form onSubmit={handleSubmit}>
+      <Editor
+        apiKey='zcfhxtk5bqdfenzkqhvs7p0nzuvtvuduy9008c17l7c5w47s'
+        onInit={(evt, editor) => editorRef.current = editor}
         init={{
-            initialValue: defaultValue,
-            height: 500,
-            menubar: true,
-            plugins: [
-                "image",
-                "advlist",
-                "autolink",
-                "lists",
-                "link",
-                "image",
-                "charmap",
-                "preview",
-                "anchor",
-                "searchreplace",
-                "visualblocks",
-                "code",
-                "fullscreen",
-                "insertdatetime",
-                "media",
-                "table",
-                "code",
-                "help",
-                "wordcount",
-                "anchor",
-            ],
-            toolbar:
-            "undo redo | blocks | image | bold italic forecolor | alignleft aligncenter bold italic forecolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent |removeformat | help",
-            content_style: "body { font-family:Helvetica,Arial,sans-serif; font-size:14px }"
+          plugins: 'lists link image',
+          toolbar: 'undo redo | styleselect | bold italic | alignleft aligncenter alignright | bullist numlist outdent indent | link image',
+          height: 300,
         }}
-        onEditorChange={onChange}
-        />
-    )}
-    />
+      />
+      <button type="submit">Submit</button>
+    </form>
+  );
+};
 
-     </div>
-  )
-}
-
+export default PostForm;

@@ -1,9 +1,9 @@
-import React from 'react'
+import React from 'react';
 
-function Logo({width = '100px'}) {
-  return (
-    <div>Logo</div>
-  )
-}
+const Logo = () => {
+    return (
+        <img src="V:\12MegaBlog\logo blog.png" alt="BlogBreeze Logo" className="h-8" />
+    );
+};
 
-export default Logo
+export default Logo;
