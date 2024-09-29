@@ -15,17 +15,18 @@ export class Service{
     }
 
     async createPost({title, slug, content, featuredImage, status, userId}){
+        console.log(title,content,status,userId,"Create")
         try {
             return await this.databases.createDocument(
                 conf.appwriteDatabaseId,
                 conf.appwriteCollectionId,
                 slug,
                 {
-                    title,
-                    content,
-                    featuredImage,
-                    status,
-                    userId,
+                    Title:title,
+                    Content:content,
+                    FeaturedImage:featuredImage,
+                    Status:status,
+                    UserId:userId,
                 }
             )
         } catch (error) {
@@ -34,6 +35,7 @@ export class Service{
     }
 
     async updatePost(slug, {title, content, featuredImage, status}){
+        console.log(title,content,status,userId,slug,"Upadte post")
         try {
             return await this.databases.updateDocument(
                 conf.appwriteDatabaseId,

@@ -64,10 +64,10 @@ export default function PostForm({ post }) {
 
     React.useEffect(() => {
         const subscription = watch((value) => {
-            console.log("Current form values:", value); // Log current values
-            // if (value.title) {
-            //     setValue("slug", slugTransform(value.title), { shouldValidate: true });
-            // }
+            console.log("Current form values:", value.title); // Log current values
+            if (!value.title) {
+                setValue("title", slugTransform(value.title), { shouldValidate: true });
+            }
         });
 
         return () => subscription.unsubscribe();
