@@ -17,6 +17,7 @@ export default function Post() {
     useEffect(() => {
         if (slug) {
             appwriteService.getPost(slug).then((post) => {
+                console.log(post)
                 if (post) setPost(post);
                 else navigate("/");
             });
@@ -37,11 +38,11 @@ export default function Post() {
             <Container>
                 <div className="w-full flex justify-center mb-4 relative border rounded-xl p-2">
                     <img
-                        src={appwriteService.getFilePreview(post.featuredImage)}
+                        src={appwriteService.getFilePreview(post.FeaturedImage)}
                         alt={post.title}
                         className="rounded-xl"
                     />
-
+                      
                     {isAuthor && (
                         <div className="absolute right-6 top-6">
                             <Link to={`/edit-post/${post.$id}`}>
@@ -59,7 +60,7 @@ export default function Post() {
                     <h1 className="text-2xl font-bold">{post.title}</h1>
                 </div>
                 <div className="browser-css">
-                    {parse(post.content)}
+                    {parse(post.Content)}
                     </div>
             </Container>
         </div>
