@@ -14,8 +14,16 @@ function Home() {
     useEffect(() => {
         appwriteService.getPosts().then((posts) => {
             if (posts) {
-                setPosts(posts.documents)
-                setFilteredPosts(posts.documents)
+                // Convert post data to match component props
+                const formattedPosts = posts.documents.map(post => ({
+                    $id: post.$id,
+                    title: post.title,
+                    content: post.content,
+                    image: post.image,
+                    $createdAt: post.$createdAt
+                }))
+                setPosts(formattedPosts)
+                setFilteredPosts(formattedPosts)
             }
             setLoading(false)
         })
@@ -28,8 +36,8 @@ function Home() {
         }
         
         const filtered = posts.filter((post) => 
-            post.Title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            post.Content?.toLowerCase().includes(searchTerm.toLowerCase())
+            post.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            post.content?.toLowerCase().includes(searchTerm.toLowerCase())
         )
         setFilteredPosts(getSortedPosts(filtered))
     }
@@ -39,7 +47,7 @@ function Home() {
             case 'oldest':
                 return [...postsToSort].sort((a, b) => new Date(a.$createdAt) - new Date(b.$createdAt))
             case 'title':
-                return [...postsToSort].sort((a, b) => a.Title.localeCompare(b.Title))
+                return [...postsToSort].sort((a, b) => (a.title || '').localeCompare(b.title || ''))
             default: // 'latest'
                 return [...postsToSort].sort((a, b) => new Date(b.$createdAt) - new Date(a.$createdAt))
         }
@@ -178,7 +186,14 @@ function Home() {
                                         className="animate-fade-in transform hover:-translate-y-1 transition-all duration-300"
                                         style={{ animationDelay: `${(index * 100) + 800}ms` }}
                                     >
-                                        <PostCard {...post} />
+                                        <PostCard 
+                                            $id={post.$id}
+                                            title={post.title}
+                                            content={post.content}
+                                            image={post.image}
+                                            createdAt={post.$createdAt} 
+                                            className="h-full"
+                                        />
                                     </div>
                                 ))}
                             </div>

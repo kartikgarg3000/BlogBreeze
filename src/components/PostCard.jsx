@@ -1,9 +1,11 @@
-import React from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import appwriteService from "../appwrite/config";
 import { Link } from 'react-router-dom';
 
-function PostCard({ $id, Title, Content, FeaturedImage, className = '' }) {
+function PostCard({ $id, title, content, image, $createdAt, className = '' }) {
+    const [imageError, setImageError] = useState(false);
+
     // Function to strip HTML tags and get plain text
     const getPlainText = (html) => {
         if (!html) return '';
@@ -11,23 +13,27 @@ function PostCard({ $id, Title, Content, FeaturedImage, className = '' }) {
         return doc.body.textContent || '';
     };
 
-    const formattedDate = new Date().toLocaleDateString('en-US', {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric'
-    });
+    const formatDate = (dateString) => {
+        const date = new Date(dateString);
+        return date.toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+        });
+    };
 
     return (
         <div className={`bg-white rounded-xl shadow-md overflow-hidden hover:shadow-xl transition-all duration-300 h-full animate-fade-in ${className}`}>
             <Link to={`/post/${$id}`} className="block h-full">
                 {/* Image Section */}
                 <div className="relative h-48 overflow-hidden">
-                    {FeaturedImage ? (
+                    {image && !imageError ? (
                         <img
-                            src={appwriteService.getFilePreview(FeaturedImage)}
-                            alt={Title}
+                            src={appwriteService.getFilePreview(image)}
+                            alt={title || 'Post image'}
                             className="w-full h-full object-cover transform hover:scale-105 transition-transform duration-300"
                             loading="lazy"
+                            onError={() => setImageError(true)}
                         />
                     ) : (
                         <div className="w-full h-full bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center">
@@ -50,18 +56,23 @@ function PostCard({ $id, Title, Content, FeaturedImage, className = '' }) {
 
                 {/* Content Section */}
                 <div className="p-5">
+                    <div className="flex items-center mb-2">
+                        <span className="text-sm text-gray-500">
+                            {formatDate($createdAt)}
+                        </span>
+                    </div>
+                    
                     <h2 className="text-xl font-bold text-gray-900 mb-2 line-clamp-2 hover:text-primary-600 transition-colors">
-                        {Title}
+                        {title || 'Untitled Post'}
                     </h2>
                     
-                    {Content && (
+                    {content && (
                         <p className="text-gray-600 line-clamp-3 text-sm mb-3">
-                            {getPlainText(Content)}
+                            {getPlainText(content)}
                         </p>
                     )}
 
-                    <div className="flex items-center justify-between mt-4">
-                        <span className="text-gray-500 text-sm">{formattedDate}</span>
+                    <div className="flex items-center justify-end mt-4">
                         <span className="text-primary-600 text-sm font-medium hover:text-primary-800">
                             Read More →
                         </span>
@@ -74,15 +85,17 @@ function PostCard({ $id, Title, Content, FeaturedImage, className = '' }) {
 
 PostCard.propTypes = {
     $id: PropTypes.string.isRequired,
-    Title: PropTypes.string.isRequired,
-    Content: PropTypes.string,
-    FeaturedImage: PropTypes.string,
+    title: PropTypes.string,
+    content: PropTypes.string,
+    image: PropTypes.string,
+    $createdAt: PropTypes.string.isRequired,
     className: PropTypes.string
 };
 
 PostCard.defaultProps = {
-    Content: '',
-    FeaturedImage: '',
+    title: 'Untitled Post',
+    content: '',
+    image: '',
     className: ''
 };
 
