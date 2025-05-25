@@ -1,7 +1,5 @@
 # BlogBreeze - Modern Blogging Platform
 
-![BlogBreeze](public/blogbreeze-preview.png)
-
 BlogBreeze is a modern, feature-rich blogging platform built with React, Appwrite, and TailwindCSS. It provides a seamless writing experience with a beautiful UI and robust functionality.
 
 ## 🚀 Features
@@ -49,7 +47,7 @@ BlogBreeze is a modern, feature-rich blogging platform built with React, Appwrit
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/yourusername/BlogBreeze.git
+git clone https://github.com/kartikgarg3000/BlogBreeze.git
 cd BlogBreeze
 ```
 
@@ -158,6 +156,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 📧 Contact
 
-Your Name - [@your_twitter](https://twitter.com/your_twitter)
+Kartik Garg - [@my_twitter](https://x.com/Kartik_sui)
 
-Project Link: [https://github.com/yourusername/BlogBreeze](https://github.com/yourusername/BlogBreeze)
+Project Link: [https://github.com/kartikgarg3000/BlogBreeze](https://github.com/kartikgarg3000/BlogBreeze)
