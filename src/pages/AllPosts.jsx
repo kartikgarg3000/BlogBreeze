@@ -13,7 +13,16 @@ function AllPosts() {
             try {
                 const postsData = await appwriteService.getPosts([]);
                 if (postsData) {
-                    const mappedPosts = postsData.documents;
+                    // Map posts to ensure correct property names
+                    const mappedPosts = postsData.documents.map(post => ({
+                        $id: post.$id,
+                        title: post.title,
+                        content: post.content,
+                        image: post.image,
+                        $createdAt: post.$createdAt,
+                        status: post.status,
+                        userId: post.userId
+                    }));
                     setPosts(mappedPosts);
                     setFilteredPosts(getSortedPosts(mappedPosts));
                 }
@@ -33,8 +42,8 @@ function AllPosts() {
         }
         
         const filtered = posts.filter((post) => 
-            post.Title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            post.Content?.toLowerCase().includes(searchTerm.toLowerCase())
+            post.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            post.content?.toLowerCase().includes(searchTerm.toLowerCase())
         );
         setFilteredPosts(getSortedPosts(filtered));
     };
@@ -44,7 +53,7 @@ function AllPosts() {
             case 'oldest':
                 return [...postsToSort].sort((a, b) => new Date(a.$createdAt) - new Date(b.$createdAt));
             case 'title':
-                return [...postsToSort].sort((a, b) => a.Title.localeCompare(b.Title));
+                return [...postsToSort].sort((a, b) => (a.title || '').localeCompare(b.title || ''));
             default: // 'latest'
                 return [...postsToSort].sort((a, b) => new Date(b.$createdAt) - new Date(a.$createdAt));
         }
@@ -115,11 +124,11 @@ function AllPosts() {
                                 >
                                     <PostCard 
                                         $id={post.$id}
-                                        Title={post.Title}
-                                        Content={post.Content}
-                                        featuredImage={post.featuredImage}
+                                        title={post.title}
+                                        content={post.content}
+                                        image={post.image}
                                         $createdAt={post.$createdAt}
-                                        status={post.status}
+                                        className="h-full"
                                     />
                                 </div>
                             ))}

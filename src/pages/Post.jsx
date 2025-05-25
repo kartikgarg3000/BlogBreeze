@@ -17,6 +17,24 @@ export default function Post() {
     const navigate = useNavigate();
     const userData = useSelector((state) => state.auth.userData);
 
+    // Format date
+    const formatDate = (dateString) => {
+        return new Date(dateString).toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+        });
+    };
+
+    // Estimate reading time
+    const calculateReadingTime = (content) => {
+        if (!content) return '1 min read';
+        const wordsPerMinute = 200;
+        const words = content.split(/\s+/).length;
+        const minutes = Math.ceil(words / wordsPerMinute);
+        return `${minutes} min read`;
+    };
+
     useEffect(() => {
         async function fetchPost() {
             if (!slug) {
@@ -29,12 +47,10 @@ export default function Post() {
                 setLoading(true);
                 setError(null);
                 const fetchedPost = await appwriteService.getPost(slug);
-                console.log('Fetched post:', fetchedPost);
                 
                 if (fetchedPost) {
                     setPost(fetchedPost);
                     if (fetchedPost.image) {
-                        // Preload image
                         const img = new Image();
                         img.src = appwriteService.getFilePreview(fetchedPost.image);
                         img.onerror = () => setImageError(true);
@@ -60,17 +76,13 @@ export default function Post() {
         try {
             setDeleteLoading(true);
             setError(null);
-            
-            // Delete post first
             await appwriteService.deletePost(post.$id);
             
-            // If successful, try to delete the image
             if (post.image) {
                 try {
                     await appwriteService.deleteFile(post.image);
                 } catch (imageError) {
                     console.warn('Failed to delete image:', imageError);
-                    // Continue even if image deletion fails
                 }
             }
             
@@ -83,42 +95,24 @@ export default function Post() {
         }
     };
 
-    const renderImage = () => {
-        if (!post.image || imageError) {
-            return (
-                <div className="w-full h-48 bg-gray-100 rounded-xl flex items-center justify-center">
-                    <img 
-                        src={placeholderImage}
-                        alt="No image available"
-                        className="w-full h-full object-contain opacity-50"
-                    />
-                </div>
-            );
-        }
-
-        return (
-            <div className="relative w-full">
-                <img
-                    src={appwriteService.getFilePreview(post.image)}
-                    alt={post.title || "Post image"}
-                    className="rounded-xl max-h-[600px] w-full object-contain"
-                    onError={(e) => {
-                        console.error('Image load error for:', post.image);
-                        e.target.onerror = null;
-                        setImageError(true);
-                    }}
-                />
-            </div>
-        );
-    };
-
     if (loading) {
         return (
-            <Container>
-                <div className="min-h-screen flex items-center justify-center">
-                    <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary-600"></div>
-                </div>
-            </Container>
+            <div className="min-h-screen bg-gray-50">
+                <Container>
+                    <div className="animate-pulse space-y-8 py-16">
+                        <div className="h-96 bg-gray-200 rounded-2xl"></div>
+                        <div className="space-y-4 max-w-3xl mx-auto">
+                            <div className="h-8 bg-gray-200 rounded w-3/4"></div>
+                            <div className="h-4 bg-gray-200 rounded w-1/4"></div>
+                            <div className="space-y-2">
+                                <div className="h-4 bg-gray-200 rounded"></div>
+                                <div className="h-4 bg-gray-200 rounded"></div>
+                                <div className="h-4 bg-gray-200 rounded w-5/6"></div>
+                            </div>
+                        </div>
+                    </div>
+                </Container>
+            </div>
         );
     }
 
@@ -142,50 +136,64 @@ export default function Post() {
         );
     }
 
-    const isAuthor = userData && post.userId === userData.$id;
-
     return (
-        <div className="py-8">
+        <article className="min-h-screen bg-gray-50 py-16">
             <Container>
-                <div className="w-full flex justify-center mb-4 relative border rounded-xl p-2">
-                    {renderImage()}
-                </div>
+                <div className="max-w-4xl mx-auto">
+                    {post.image && !imageError && (
+                        <div className="mb-8 rounded-2xl overflow-hidden shadow-lg">
+                            <img
+                                src={appwriteService.getFilePreview(post.image)}
+                                alt={post.title}
+                                className="w-full h-[500px] object-cover"
+                                onError={(e) => {
+                                    e.target.onerror = null;
+                                    setImageError(true);
+                                }}
+                            />
+                        </div>
+                    )}
 
-                <div className="w-full mb-6">
-                    <h1 className="text-3xl font-bold text-gray-900">
-                        {post.title || "Untitled Post"}
-                    </h1>
-                    
-                    {isAuthor && (
-                        <div className="flex gap-3 mt-4">
+                    <header className="mb-8">
+                        <h1 className="text-4xl font-bold text-gray-900 mb-4">
+                            {post.title || "Untitled Post"}
+                        </h1>
+                        <div className="flex items-center gap-4 text-gray-600">
+                            <time dateTime={post.$createdAt}>
+                                {formatDate(post.$createdAt)}
+                            </time>
+                            <span>•</span>
+                            <span>{calculateReadingTime(post.content)}</span>
+                        </div>
+                    </header>
+
+                    {userData && post.userId === userData.$id && (
+                        <div className="flex gap-4 mb-8">
                             <Link to={`/edit-post/${post.$id}`}>
-                                <Button 
-                                    bgColor="bg-green-500"
-                                    className="hover:bg-green-600 transition-colors"
-                                >
-                                    Edit
+                                <Button bgColor="bg-green-600" className="hover:bg-green-700">
+                                    Edit Post
                                 </Button>
                             </Link>
                             <Button 
-                                bgColor="bg-red-500"
-                                className="hover:bg-red-600 transition-colors"
+                                bgColor="bg-red-600" 
+                                className="hover:bg-red-700"
                                 onClick={handleDeletePost}
                                 disabled={deleteLoading}
                             >
-                                {deleteLoading ? "Deleting..." : "Delete"}
+                                {deleteLoading ? "Deleting..." : "Delete Post"}
                             </Button>
                         </div>
                     )}
-                </div>
 
-                <div className="prose prose-lg max-w-none">
-                    {post.content ? (
-                        parse(post.content)
-                    ) : (
-                        <p className="text-gray-500">No content available</p>
-                    )}
+                    <div className="prose prose-lg max-w-none prose-headings:text-gray-900 prose-p:text-gray-700 prose-a:text-primary-600">
+                        {post.content ? (
+                            parse(post.content)
+                        ) : (
+                            <p className="text-gray-500">No content available</p>
+                        )}
+                    </div>
                 </div>
             </Container>
-        </div>
+        </article>
     );
 }
